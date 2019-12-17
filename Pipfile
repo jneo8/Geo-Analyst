@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 pandas = "*"
 neologger = {git = "https://github.com/jneo8/neo_logger"}
+folium = "*"
 
 [requires]
 python_version = "3.6"
