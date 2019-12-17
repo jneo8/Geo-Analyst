@@ -1,11 +1,12 @@
 """Main."""
-from pkg.osm_parser.pbf_parser import pbf_parser
+import csv
 import time
 import functools
-import logging
+import pandas as pd
+from neologger import logger
 
 
-logger = logging.getLogger(__name__)
+logger = logger.Logger(__name__)
 
 
 def timeit(func):
@@ -23,13 +24,24 @@ def timeit(func):
 
     return wrapper
 
+def read_data():
+    """Read data from csv and return pandas dataFrame."""
+    with open("./src/classifier_output.csv") as csv_file:
+        rows = csv.reader(csv_file)
+        headers = next(rows, None)
+        arr = []
+        for row in rows:
+            arr.append(row)
+        df = pd.DataFrame(arr, columns = headers)
+        return df
+
+
 
 @timeit
 def main():
     """Main."""
-    pbf_parser(
-        "/home/jameslin/ghtinc-Porject/Geo-Analyst/src/taiwan-latest.osm.pbf"
-    )
+    df = read_data()
+    logger.info(df)
 
 
 if __name__ == "__main__":

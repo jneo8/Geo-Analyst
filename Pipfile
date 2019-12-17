@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-pydriosm = "*"
+pandas = "*"
+neologger = {git = "https://github.com/jneo8/neo_logger"}
 
 [requires]
 python_version = "3.6"
