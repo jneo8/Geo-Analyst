@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pandas = "*"
+neologger = {git = "https://github.com/jneo8/neo_logger"}
+folium = "*"
+h3 = "*"
+branca = "*"
+geojson = "*"
+
+[requires]
+python_version = "3.6"

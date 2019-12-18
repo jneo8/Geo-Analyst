@@ -1,0 +1,13 @@
+[{Makefile,**.mk}]
+indent_style = tab
+
+[*.yml, *.tmpl]
+indent_style = space
+indent_size = 2
+
+[*.go]
+indent_style = tab
+
+[*.py]
+indent_style = space
+indent_size = 4
