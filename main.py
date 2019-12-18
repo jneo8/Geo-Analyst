@@ -1,6 +1,7 @@
 """Main."""
 import csv
 import time
+import sys
 import functools
 import json
 import pandas as pd
@@ -22,6 +23,8 @@ import branca.colormap as cm
 
 
 logger = logger.Logger(__name__)
+
+csv.field_size_limit(sys.maxsize)
 
 TAIPEI_LOCATION = [25.105497, 121.597366]
 
@@ -233,10 +236,15 @@ def counts_by_hexagon(df):
     data = {}
     for index, row in df.iterrows():
         k = int(row["group"])
-        data[k] = set(row["H3Indexs"].split(","))
+
+
+        data[k] = {
+            "h3_idxs": set(row["H3Indexs"].split(",")),
+        }
+
     df_arr = []
-    for k, h3idxs in data.items():
-        for h3_idx in h3idxs:
+    for k, v in data.items():
+        for h3_idx in v["h3_idxs"]:
             geometry = {"type": "Polygon", "coordinates": [h3.h3_to_geo_boundary(h3_address=h3_idx, geo_json=True)]}
             df_arr.append([h3_idx, k, geometry])
     df = pd.DataFrame(df_arr, columns=["hex_id", "value", "geometry"])
@@ -246,7 +254,11 @@ def hexagons_dataframe_to_geojson(df_hex, file_output = None):
     '''Produce the GeoJSON for a dataframe that has a geometry column in geojson format already, along with the columns hex_id and value '''
     list_features = []
     for i,row in df_hex.iterrows():
-        feature = Feature(geometry = row["geometry"] , id=row["hex_id"], properties = {"value" : row["value"]})
+        feature = Feature(
+            geometry = row["geometry"],
+            id=row["hex_id"],
+            properties = {"value" : row["value"]}
+        )
         list_features.append(feature)
     feat_collection = FeatureCollection(list_features)
     geojson_result = json.dumps(feat_collection)
@@ -280,7 +292,7 @@ def choropleth_map(
         initial_map = Map(
             location=TAIPEI_LOCATION,
             zoom_start=11,
-            tiles="cartodbpositron",
+            tiles="Stamen Terrain",
             attr= '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>',
         )
 
@@ -306,6 +318,7 @@ def choropleth_map(
             "color": border_color,
             "weight": 1,
             "fillOpacity": fill_opacity,
+            "popup": "123",
         },
         name=name_layer,
     ).add_to(initial_map)
@@ -323,8 +336,8 @@ def main():
 
     m_hex_map = None
     for row in df.itertuples():
-        dff = pd.DataFrame(data=[row])
-        color_num = int(row.group) * 7
+        dff = pd.DataFrame(data=[row], columns=["index"] + df.columns.tolist())
+        color_num = int(row.group) * 8
         colors = list(COLORS.keys())[color_num:color_num+2]
         m_hex_map = choropleth_map(
             df=counts_by_hexagon(dff),
