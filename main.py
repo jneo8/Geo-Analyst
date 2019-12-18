@@ -337,13 +337,13 @@ def main():
     m_hex_map = None
     for row in df.itertuples():
         dff = pd.DataFrame(data=[row], columns=["index"] + df.columns.tolist())
-        color_num = int(row.group) * 8
+        color_num = int(row[0]) * 8
         colors = list(COLORS.keys())[color_num:color_num+2]
         m_hex_map = choropleth_map(
             df=counts_by_hexagon(dff),
             with_legend=False,
             initial_map=m_hex_map,
-            layer_prefix=row.group,
+            layer_prefix=row[0],
             colors=colors,
         )
     folium.map.LayerControl('bottomright', collapsed=False).add_to(m_hex_map)
